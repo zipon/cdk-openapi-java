@@ -1,0 +1,42 @@
+openapi: 3.0.3
+info:
+  title: Demonstration API Specification
+  version: 1.0.0
+  description: OpenApi defined, aws serverless, Rest API
+  contact:
+    name: Lars Andersson
+security:
+  - Token: []
+tags:
+  - name: Demonstration
+components:
+  securitySchemes:
+    Token:
+      type: apiKey
+      in: header
+      name: x-api-key
+      description: Enter token (ApiKey) from API GW that is connected to the usageplan of the api
+  headers:
+    Example:
+      description: Example header
+      schema:
+        type: string
+paths:
+  '/customers/{customer_id}':
+    get:
+      summary: Show lambda proxy result
+      description: Get invoke lambda.
+      operationId: demo/show
+      tags:
+        - Demonstartion Tag
+      x-amazon-apigateway-integration:
+        responses:
+          default:
+            statusCode: '200'
+        uri:
+          Fn::Sub: "arn:${AWS::Partition}:apigateway:${AWS::Region}:lambda:path/2015-03-31/functions/${MyCustomLambda.Arn}/invocations"
+        passthroughBehavior: when_no_match
+        httpMethod: POST
+        type: aws_proxy
+        credentials: "arn:aws:iam::${AWS::AccountId}:role/apiRole"
+        
